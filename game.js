@@ -33,13 +33,15 @@ let ghosts = [];
 
 let ghostCount = 4;
 
-let ghostLoactions = [
+let ghostImageLocations = [
     { x: 0, y: 0 },
     { x: 176, y: 0 },
     { x: 0, y: 121 },
     { x: 176, y: 121 },
 ];
 
+// if 1 wall, if 2 not wall
+// 21 columns, 23 rows
 let map = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 
@@ -88,11 +90,11 @@ let map = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
-let randomTargetForGhosts = [
+let randomTargetsForGhosts = [
     { x: 1 * oneBlockSize, y: 1 * oneBlockSize },
     { x: 1 * oneBlockSize, y: (map.length - 2) * oneBlockSize },
     { x: (map[0].length - 2) * oneBlockSize, y: oneBlockSize },
-    { x: (map[0].length - 2 * oneBlockSize), y: (map.length - 2) * oneBlockSize },
+    { x: (map[0].length - 2) * oneBlockSize, y: (map.length - 2) * oneBlockSize },
 ];
 
 let gameLoop = () => {
@@ -103,6 +105,10 @@ let gameLoop = () => {
 let update = () => {
     pacman.moveProcess();
     pacman.eat();
+
+    for (let i = 0; i < ghosts.length; i++) {
+        ghosts[i].moveProcess();
+    };
 };
 
 let drawFoods = () => {
@@ -220,8 +226,8 @@ let createGhosts = () => {
             oneBlockSize,
             oneBlockSize,
             pacman.speed / 2,
-            ghostLoactions[i % 4].x,
-            ghostLoactions[i % 4].y,
+            ghostImageLocations[i % 4].x,
+            ghostImageLocations[i % 4].y,
             124,
             116,
             6 + i

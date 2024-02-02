@@ -25,9 +25,9 @@ class Ghost {
 
     moveProcess() {
         if (this.isInRangeOfPacman()) {
-            target = pacman;
+            this.target = pacman;
         } else {
-            this.target = randomTargetForGhosts[this.randomTargetIndex];
+            this.target = randomTargetsForGhosts[this.randomTargetIndex];
         };
 
         this.changeDirectionIfPossible();
@@ -110,6 +110,11 @@ class Ghost {
             parseInt(this.target.y / oneBlockSize)
         );
 
+        if (typeof this.direction == 'undefined') {
+            this.direction = tempDirection;
+            return;
+        };
+
         this.moveForwards();
 
         if (this.checkCollision()) {
@@ -142,8 +147,14 @@ class Ghost {
                 mp[poped.y][poped.x] = 1;
 
                 let neighborList = this.addNeighbors(poped, mp);
+
+                for (let i = 0; i < neighborList.length; i++) {
+                    queue.push(neighborList[i]);
+                }
             };
         };
+
+        return DIRECTION_UP;
     };
 
     addNeighbors(poped, mp) {
@@ -154,8 +165,28 @@ class Ghost {
         if (poped.x - 1 >= 0 && poped.x - 1 < numOfRows && mp[poped.y][poped.x - 1] != 1) {
             let tempMoves = poped.moves.slice();
             tempMoves.push(DIRECTION_LEFT);
-            queue.push({x: poped.x - 1, y: poped.y, moves: tempMoves});
+            queue.push({ x: poped.x - 1, y: poped.y, moves: tempMoves });
         };
+
+        if (poped.x + 1 >= 0 && poped.x + 1 < numOfRows && mp[poped.y][poped.x + 1] != 1) {
+            let tempMoves = poped.moves.slice();
+            tempMoves.push(DIRECTION_RIGHT);
+            queue.push({ x: poped.x + 1, y: poped.y, moves: tempMoves });
+        };
+
+        if (poped.y - 1 >= 0 && poped.y - 1 < numOfRows && mp[poped.y - 1][poped.x - 1] != 1) {
+            let tempMoves = poped.moves.slice();
+            tempMoves.push(DIRECTION_UP);
+            queue.push({ x: poped.x, y: poped.y - 1, moves: tempMoves });
+        };
+
+        if (poped.x + 1 >= 0 && poped.x + 1 < numOfRows && mp[poped.y + 1][poped.x] != 1) {
+            let tempMoves = poped.moves.slice();
+            tempMoves.push(DIRECTION_LEFT);
+            queue.push({ x: poped.x, y: poped.y + 1, moves: tempMoves });
+        };
+
+        return queue;
     };
 
     changeAnimation() {
