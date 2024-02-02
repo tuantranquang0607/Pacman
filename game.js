@@ -29,6 +29,17 @@ let foodColor = 'white';
 
 let score = 0;
 
+let ghosts = [];
+
+let ghostCount = 4;
+
+let ghostLoactions = [
+    { x: 0, y: 0 },
+    { x: 176, y: 0 },
+    { x: 0, y: 121 },
+    { x: 176, y: 121 },
+];
+
 let map = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 
@@ -77,6 +88,13 @@ let map = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
+let randomTargetForGhosts = [
+    { x: 1 * oneBlockSize, y: 1 * oneBlockSize },
+    { x: 1 * oneBlockSize, y: (map.length - 2) * oneBlockSize },
+    { x: (map[0].length - 2) * oneBlockSize, y: oneBlockSize },
+    { x: (map[0].length - 2 * oneBlockSize), y: (map.length - 2) * oneBlockSize },
+];
+
 let gameLoop = () => {
     update();
     draw();
@@ -109,12 +127,19 @@ let drawScore = () => {
     canvasContext.fillText('Score: ' + score, 0, oneBlockSize * (map.length + 1) + 10);
 };
 
+let drawGhosts = () => {
+    for (let i = 0; i < ghosts.length; i++) {
+        ghosts[i].draw();
+    };
+};
+
 let draw = () => {
     createRect(0, 0, canvas.width, canvas.height, 'black');
     drawWalls();
     drawFoods();
     pacman.draw();
     drawScore();
+    drawGhosts();
 };
 
 let gameInterval = setInterval(gameLoop, 1000 / fps);
@@ -185,7 +210,28 @@ let createNewPacman = () => {
     );
 };
 
+let createGhosts = () => {
+    ghosts = [];
+
+    for (let i = 0; i < ghostCount; i++) {
+        let newGhost = new Ghost(
+            9 * oneBlockSize + (i % 2 == 0 ? 0 : 1) * oneBlockSize,
+            10 * oneBlockSize + (i % 2 == 0 ? 0 : 1) * oneBlockSize,
+            oneBlockSize,
+            oneBlockSize,
+            pacman.speed / 2,
+            ghostLoactions[i % 4].x,
+            ghostLoactions[i % 4].y,
+            124,
+            116,
+            6 + i
+        );
+        ghosts.push(newGhost);
+    };
+};
+
 createNewPacman();
+createGhosts();
 gameLoop();
 
 window.addEventListener('keydown', (e) => {
