@@ -19,7 +19,7 @@ class Ghost {
     };
 
     changeRandomDirection() {
-        this.randomTargetIndex += 1;
+        this.randomTargetIndex += parseInt(Math.random() * 4);
         this.randomTargetIndex = this.randomTargetIndex % 4;
     };
 
@@ -182,7 +182,7 @@ class Ghost {
 
         if (poped.x + 1 >= 0 && poped.x + 1 < numOfRows && mp[poped.y + 1][poped.x] != 1) {
             let tempMoves = poped.moves.slice();
-            tempMoves.push(DIRECTION_LEFT);
+            tempMoves.push(DIRECTION_BOTTOM);
             queue.push({ x: poped.x, y: poped.y + 1, moves: tempMoves });
         };
 
@@ -209,6 +209,16 @@ class Ghost {
             this.height
         );
         canvasContext.restore();
+        canvasContext.beginPath();
+        canvasContext.strokeStyle = 'red';
+        canvasContext.arc(
+            this.x + oneBlockSize / 2,
+            this.y + oneBlockSize / 2,
+            this.range * oneBlockSize,
+            0,
+            Math.PI * 2
+        );
+        canvasContext.stroke();
     };
 
     getMapX() {
