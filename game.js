@@ -1,6 +1,6 @@
 const canvas = document.getElementById('canvas');
 const canvasContext = canvas.getContext('2d');
-const pacmanFrames = document.getElementById('animations');
+const pacmanFrames = document.getElementById('animation');
 const ghostFrames = document.getElementById('ghosts');
 
 const DIRECTION_RIGHT = 4;
@@ -19,7 +19,7 @@ let oneBlockSize = 20;
 
 let wallColor = '#342DCA';
 
-let wallSpaceWidth = oneBlockSize / 1.5;
+let wallSpaceWidth = oneBlockSize / 1.6;
 
 let wallOffset = (oneBlockSize - wallSpaceWidth) / 2;
 
@@ -43,6 +43,8 @@ let ghostImageLocations = [
 let lives = 3;
 
 let foodCount = 0;
+
+let pacman;
 
 // if 1 wall, if 2 not wall
 // 21 columns, 23 rows
@@ -110,27 +112,36 @@ let randomTargetsForGhosts = [
 ];
 
 let gameLoop = () => {
-    draw();
     update();
+    draw();
 };
+
+// let update = () => {
+//     pacman.moveProcess();
+//     pacman.eat();
+
+//     for (let i = 0; i < ghosts.length; i++) {
+//         ghosts[i].moveProcess();
+//     };
+
+//     if (pacman.checkGhostCollision()) {
+//         console.log('Game Over!');
+//         restartGame();
+//     };
+
+//     if (score >= foodCount) {
+//         drawWin();
+//         clearInterval(gameInterval);
+//     };
+// };
 
 let update = () => {
     pacman.moveProcess();
     pacman.eat();
-
-    for (let i = 0; i < ghosts.length; i++) {
-        ghosts[i].moveProcess();
-    };
-
-    if (pacman.checkGhostCollision()) {
-        console.log('Game Over!');
-        restartGame();
-    };
-
-    if (score >= foodCount) {
-        drawWin();
-        clearInterval(gameInterval);
-    };
+    updateGhosts();
+    if (pacman.checkGhostCollision(ghosts)) {
+        onGhostCollision();
+    }
 };
 
 let restartGame = () => {
@@ -190,24 +201,45 @@ let drawFoods = () => {
                     i * oneBlockSize + oneBlockSize / 3,
                     oneBlockSize / 3,
                     oneBlockSize / 3,
-                    foodColor
+                    // foodColor
+                    "#FEB897"
                 );
             };
         };
     };
 };
 
+let drawRemainingLives = () => {
+    canvasContext.font = "20px Emulogic";
+    canvasContext.fillStyle = "white";
+    canvasContext.fillText("Lives: ", 220, oneBlockSize * (map.length + 1));
+
+    for (let i = 0; i < lives; i++) {
+        canvasContext.drawImage(
+            pacmanFrames,
+            2 * oneBlockSize,
+            0,
+            oneBlockSize,
+            oneBlockSize,
+            350 + i * oneBlockSize,
+            oneBlockSize * map.length + 2,
+            oneBlockSize,
+            oneBlockSize
+        );
+    };
+};
+
 let drawScore = () => {
     canvasContext.font = '20px Emulogic';
     canvasContext.fillStyle = 'white';
-    canvasContext.fillText('Score: ' + score, 0, oneBlockSize * (map.length + 1) + 10);
+    canvasContext.fillText('Score: ' + score, 0, oneBlockSize * (map.length + 1));
 };
 
-let drawGhosts = () => {
-    for (let i = 0; i < ghosts.length; i++) {
-        ghosts[i].draw();
-    };
-};
+// let drawGhosts = () => {
+//     for (let i = 0; i < ghosts.length; i++) {
+//         ghosts[i].draw();
+//     };
+// };
 
 let draw = () => {
     createRect(0, 0, canvas.width, canvas.height, 'black');
@@ -216,10 +248,24 @@ let draw = () => {
     pacman.draw();
     drawScore();
     drawGhosts();
-    drawLives();
+    // drawLives();
+    canvasContext.clearRect(0, 0, canvas.width, canvas.height);
 };
 
 let gameInterval = setInterval(gameLoop, 1000 / fps);
+
+let restartPacmanAndGhosts = () => {
+    createNewPacman();
+    createGhosts();
+};
+
+let onGhostCollision = () => {
+    lives--;
+    restartPacmanAndGhosts();
+
+    if (lives == 0) {
+    };
+};
 
 let drawWalls = () => {
     for (let i = 0; i < map.length; i++) {
@@ -230,48 +276,49 @@ let drawWalls = () => {
                     i * oneBlockSize,
                     oneBlockSize,
                     oneBlockSize,
-                    wallColor
+                    // wallColor
+                    "#342DCA"
                 );
-            };
 
-            if (j > 0 && map[i][j - 1] == 1) {
-                createRect(
-                    j * oneBlockSize,
-                    i * oneBlockSize + wallOffset,
-                    wallSpaceWidth + wallOffset,
-                    wallSpaceWidth,
-                    wallInnerColor
-                );
-            };
+                if (j > 0 && map[i][j - 1] == 1) {
+                    createRect(
+                        j * oneBlockSize,
+                        i * oneBlockSize + wallOffset,
+                        wallSpaceWidth + wallOffset,
+                        wallSpaceWidth,
+                        wallInnerColor
+                    );
+                };
 
-            if (j < map[0].length - 1 && map[i][j + 1] == 1) {
-                createRect(
-                    j * oneBlockSize + wallOffset,
-                    i * oneBlockSize + wallOffset,
-                    wallSpaceWidth + wallOffset,
-                    wallSpaceWidth,
-                    wallInnerColor
-                );
-            };
+                if (j < map[0].length - 1 && map[i][j + 1] == 1) {
+                    createRect(
+                        j * oneBlockSize + wallOffset,
+                        i * oneBlockSize + wallOffset,
+                        wallSpaceWidth + wallOffset,
+                        wallSpaceWidth,
+                        wallInnerColor
+                    );
+                };
 
-            if (i > 0 && map[i - 1][j] == 1) {
-                createRect(
-                    j * oneBlockSize + wallOffset,
-                    i * oneBlockSize,
-                    wallSpaceWidth,
-                    wallSpaceWidth + wallOffset,
-                    wallInnerColor
-                );
-            };
+                if (i > 0 && map[i - 1][j] == 1) {
+                    createRect(
+                        j * oneBlockSize + wallOffset,
+                        i * oneBlockSize,
+                        wallSpaceWidth,
+                        wallSpaceWidth + wallOffset,
+                        wallInnerColor
+                    );
+                };
 
-            if (i < map.length - 1 && map[i + 1][j] == 1) {
-                createRect(
-                    j * oneBlockSize + wallOffset,
-                    i * oneBlockSize + wallOffset,
-                    wallSpaceWidth,
-                    wallSpaceWidth + wallOffset,
-                    wallInnerColor
-                );
+                if (i < map.length - 1 && map[i + 1][j] == 1) {
+                    createRect(
+                        j * oneBlockSize + wallOffset,
+                        i * oneBlockSize + wallOffset,
+                        wallSpaceWidth,
+                        wallSpaceWidth + wallOffset,
+                        wallInnerColor
+                    );
+                };
             };
         };
     };
@@ -290,7 +337,7 @@ let createNewPacman = () => {
 let createGhosts = () => {
     ghosts = [];
 
-    for (let i = 0; i < ghostCount; i++) {
+    for (let i = 0; i < ghostCount * 2; i++) {
         let newGhost = new Ghost(
             9 * oneBlockSize + (i % 2 == 0 ? 0 : 1) * oneBlockSize,
             10 * oneBlockSize + (i % 2 == 0 ? 0 : 1) * oneBlockSize,
@@ -303,6 +350,7 @@ let createGhosts = () => {
             116,
             6 + i
         );
+
         ghosts.push(newGhost);
     };
 };
