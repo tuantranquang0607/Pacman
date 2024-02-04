@@ -11,20 +11,42 @@ class Ghost {
         this.imageHeight = imageHeight;
         this.imageWidth = imageWidth;
         this.range = range;
-        this.randomTargetIndex = parseInt(Math.random() * randomTargetForGhosts.length);
+        // this.randomTargetIndex = parseInt(Math.random() * randomTargetForGhosts.length);
+        this.randomTargetIndex = parseInt(Math.random() * 4);
+        this.target = randomTargetsForGhosts[this.randomTargetIndex];
 
         setInterval(() => {
             this.changeRandomDirection();
         }, 10000);
     };
 
+    isInRange() {
+        let xDistance = Math.abs(pacman.getMapX() - this.getMapX());
+        let yDistance = Math.abs(pacman.getMapY() - this.getMapY());
+
+        if (Math.sqrt(xDistance * xDistance + yDistance * yDistance) <= this.range) {
+            return true;
+        };
+
+        return false;
+    };
+
     changeRandomDirection() {
-        this.randomTargetIndex += parseInt(Math.random() * 4);
+        let addition = 1;
+
+        // this.randomTargetIndex += parseInt(Math.random() * 4);
+        this.randomTargetIndex += addition;
         this.randomTargetIndex = this.randomTargetIndex % 4;
     };
 
     moveProcess() {
-        if (this.isInRangeOfPacman()) {
+        // if (this.isInRangeOfPacman()) {
+        //     this.target = pacman;
+        // } else {
+        //     this.target = randomTargetsForGhosts[this.randomTargetIndex];
+        // };
+
+        if (this.isInRange()) {
             this.target = pacman;
         } else {
             this.target = randomTargetsForGhosts[this.randomTargetIndex];
@@ -33,23 +55,39 @@ class Ghost {
         this.changeDirectionIfPossible();
         this.moveForwards();
 
-        if (this.checkCollision()) {
-            this.moveBacwards();
+        if (this.checkCollisions()) {
+            this.moveBackwards();
+
+            return;
         };
     };
 
-    moveBacwards() {
+    moveBackwards() {
         switch (this.direction) {
-            case DIRECTION_RIGHT:
+            //     case DIRECTION_RIGHT:
+            //         this.x -= this.speed;
+            //         break;
+            //     case DIRECTION_UP:
+            //         this.y += this.speed;
+            //         break;
+            //     case DIRECTION_LEFT:
+            //         this.x += this.speed;
+            //         break;
+            //     case DIRECTION_BOTTOM:
+            //         this.y -= this.speed;
+            //         break;
+            // };
+
+            case 4: // Right
                 this.x -= this.speed;
                 break;
-            case DIRECTION_UP:
+            case 3: // Up
                 this.y += this.speed;
                 break;
-            case DIRECTION_LEFT:
+            case 2: // Left
                 this.x += this.speed;
                 break;
-            case DIRECTION_BOTTOM:
+            case 1: // Bottom
                 this.y -= this.speed;
                 break;
         };
@@ -57,37 +95,63 @@ class Ghost {
 
     moveForwards() {
         switch (this.direction) {
-            case DIRECTION_RIGHT:
-                this.x += this.speed;
-                break;
-            case DIRECTION_UP:
-                this.y -= this.speed;
-                break;
-            case DIRECTION_LEFT:
+            // case DIRECTION_RIGHT:
+            //     this.x += this.speed;
+            //     break;
+            // case DIRECTION_UP:
+            //     this.y -= this.speed;
+            //     break;
+            // case DIRECTION_LEFT:
+            //     this.x -= this.speed;
+            //     break;
+            // case DIRECTION_BOTTOM:
+            //     this.y += this.speed;
+            //     break;
+
+            case 4: // Right
                 this.x -= this.speed;
                 break;
-            case DIRECTION_BOTTOM:
+            case 3: // Up
                 this.y += this.speed;
+                break;
+            case 2: // Left
+                this.x += this.speed;
+                break;
+            case 1: // Bottom
+                this.y -= this.speed;
                 break;
         };
     };
 
-    checkCollision() {
-        let isCollied = false;
+    checkCollisions() {
+        let isCollided = false;
 
-        if (
-            map[this.getMapY()][this.getMapX()] == 1 ||
-            map[this.getMapYRightSide()][this.getMapX()] == 1 ||
-            map[this.getMapY()][this.getMapXRightSide()] == 1 ||
-            map[this.getMapYRightSide()][this.getMapXRightSide()] == 1
-        ) {
-            return true;
-        }
-        return false;
-    };
+        // if (
+        //     map[this.getMapY()][this.getMapX()] == 1 ||
+        //     map[this.getMapYRightSide()][this.getMapX()] == 1 ||
+        //     map[this.getMapY()][this.getMapXRightSide()] == 1 ||
+        //     map[this.getMapYRightSide()][this.getMapXRightSide()] == 1
+        // ) {
+        //     return true;
+        // }
+        // return false;
 
-    checkGhostCollision() {
+        if (map[parseInt(this.y / oneBlockSize)][
+            parseInt(this.x / oneBlockSize)
+        ] == 1 ||
+            map[parseInt(this.y / oneBlockSize + 0.9999)][
+            parseInt(this.x / oneBlockSize)
+            ] == 1 ||
+            map[parseInt(this.y / oneBlockSize)][
+            parseInt(this.x / oneBlockSize + 0.9999)
+            ] == 1 ||
+            map[parseInt(this.y / oneBlockSize + 0.9999)][
+            parseInt(this.x / oneBlockSize + 0.9999)
+            ] == 1) {
+            isCollided = true;
+        };
 
+        return isCollided;
     };
 
     isInRangeOfPacman() {
@@ -104,7 +168,7 @@ class Ghost {
     changeDirectionIfPossible() {
         let tempDirection = this.direction;
 
-        this.direction = this.calculateNewtDirection(
+        this.direction = this.calculateNewDirection(
             map,
             parseInt(this.target.x / oneBlockSize),
             parseInt(this.target.y / oneBlockSize)
@@ -115,17 +179,34 @@ class Ghost {
             return;
         };
 
+        if (
+            this.getMapY() != this.getMapYRightSide() &&
+            (this.direction == DIRECTION_LEFT ||
+                this.direction == DIRECTION_RIGHT)
+        ) {
+            this.direction = DIRECTION_UP;
+        };
+
+        if (
+            this.getMapX() != this.getMapXRightSide() &&
+            this.direction == DIRECTION_UP
+        ) {
+            this.direction = DIRECTION_LEFT;
+        };
+
         this.moveForwards();
 
-        if (this.checkCollision()) {
-            this.moveBacwards();
+        if (this.checkCollisions()) {
+            this.moveBackwards();
             this.direction = tempDirection;
         } else {
-            this.moveBacwards();
+            this.moveBackwards();
         };
+
+        console.log(this.direction);
     };
 
-    calculateNewtDirection(map, destX, destY) {
+    calculateNewDirection(map, destX, destY) {
         let mp = [];
 
         for (let i = 0; i < map.length; i++) {
@@ -135,6 +216,8 @@ class Ghost {
         let queue = [{
             x: this.getMapX(),
             y: this.getMapY(),
+            rightX: this.getMapXRightSide(),
+            rightY: this.getMapYRightSide(),
             moves: []
         }];
 
@@ -150,11 +233,12 @@ class Ghost {
 
                 for (let i = 0; i < neighborList.length; i++) {
                     queue.push(neighborList[i]);
-                }
+                };
             };
         };
 
-        return DIRECTION_UP;
+        // return DIRECTION_UP;
+        return 1;
     };
 
     addNeighbors(poped, mp) {
@@ -174,13 +258,13 @@ class Ghost {
             queue.push({ x: poped.x + 1, y: poped.y, moves: tempMoves });
         };
 
-        if (poped.y - 1 >= 0 && poped.y - 1 < numOfRows && mp[poped.y - 1][poped.x - 1] != 1) {
+        if (poped.y - 1 >= 0 && poped.y - 1 < numOfColumns && mp[poped.y - 1][poped.x] != 1) {
             let tempMoves = poped.moves.slice();
             tempMoves.push(DIRECTION_UP);
             queue.push({ x: poped.x, y: poped.y - 1, moves: tempMoves });
         };
 
-        if (poped.x + 1 >= 0 && poped.x + 1 < numOfRows && mp[poped.y + 1][poped.x] != 1) {
+        if (poped.y + 1 >= 0 && poped.y + 1 < numOfColumns && mp[poped.y + 1][poped.x] != 1) {
             let tempMoves = poped.moves.slice();
             tempMoves.push(DIRECTION_BOTTOM);
             queue.push({ x: poped.x, y: poped.y + 1, moves: tempMoves });
@@ -201,8 +285,8 @@ class Ghost {
             this.imageY,
             this.imageWidth,
             this.imageHeight,
-            oneBlockSize,
-            oneBlockSize,
+            // oneBlockSize,
+            // oneBlockSize,
             this.x,
             this.y,
             this.width,
@@ -222,18 +306,42 @@ class Ghost {
     };
 
     getMapX() {
-        return parseInt(this.x / oneBlockSize);
+        let mapX = parseInt(this.x / oneBlockSize);
+
+        return mapX;
+        // return parseInt(this.x / oneBlockSize);
     };
 
     getMapY() {
-        return parseInt(this.y / oneBlockSize);
+        let mapY = parseInt(this.y / oneBlockSize);
+
+        return mapY;
+        // return parseInt(this.y / oneBlockSize);
     };
 
     getMapXRightSide() {
-        return parseInt((this.x + 0.9999 * oneBlockSize) / oneBlockSize);
+        let mapX = parseInt((this.x * 0.99 + oneBlockSize) / oneBlockSize);
+
+        return mapX;
+        // return parseInt((this.x + 0.99 * oneBlockSize) / oneBlockSize);
     };
 
     getMapYRightSide() {
-        return parseInt((this.y + 0.9999 * oneBlockSize) / oneBlockSize);
+        let mapY = parseInt((this.y * 0.99 + oneBlockSize) / oneBlockSize);
+
+        return mapY;
+        // return parseInt((this.y + 0.99 * oneBlockSize) / oneBlockSize);
     };
+};
+
+let updateGhosts = () => {
+    for (let i = 0; i < ghosts.length; i++) {
+        ghosts[i].moveProcess();
+    }
+};
+
+let drawGhosts = () => {
+    for (let i = 0; i < ghosts.length; i++) {
+        ghosts[i].draw();
+    }
 };
