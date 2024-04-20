@@ -1,6 +1,6 @@
 # Pacman-Project
 
-I made the game usning Dijkstra algorithm, HTML, CSS, and JS based on a toturial on YouTube.
+I made the game using the Dijkstra algorithm, HTML, CSS, and JS based on a tutorial on YouTube.
 
 Live Demo: https://tuantranquang0607.github.io/Pacman-Project/<br>
 Source: https://youtu.be/GXlckaGr0Eo?si=sDRkd0VmS34F9A-z <br>
