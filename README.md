@@ -1,6 +1,9 @@
 # Pacman-Project
 
-I made the game using the Dijkstra algorithm, HTML, CSS, and JS based on a tutorial on YouTube.
+I embarked on an exciting journey to explore the realm of game development for the first time. I was drawn to a unique project that allowed me to leverage my existing knowledge of JavaScript, a language predominantly used for web development.<br>
+The game I built is based on the Dijkstra algorithm, an intriguing and challenging concept. The development process involved the use of HTML, CSS, and JavaScript, and was guided by an informative tutorial I found on YouTube.
+This project blended simplicity and uniqueness, aligning perfectly with my goal of starting with a manageable yet distinctive game for my first venture into game development. The choice of JavaScript as the primary language further allowed me to strengthen my skills in a familiar environment.<br>
+I am eager to continue this journey, learning and growing as I delve deeper into the fascinating world of game development.<br><br>
 
 Live Demo: https://tuantranquang0607.github.io/Pacman-Project/<br>
 Source: https://youtu.be/GXlckaGr0Eo?si=sDRkd0VmS34F9A-z <br>
