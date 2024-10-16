@@ -1,9 +1,10 @@
-const canvas = document.getElementById("canvas");
-const canvasContext = canvas.getContext("2d");
-const pacmanFrames = document.getElementById("animation");
-const ghostFrames = document.getElementById("ghosts");
+const canvas            = document.getElementById("canvas");
+const canvasContext     = canvas.getContext("2d");
+const pacmanFrames      = document.getElementById("animation");
+const ghostFrames       = document.getElementById("ghosts");
 
-let createRect = (x, y, width, height, color) => {
+let createRect = (x, y, width, height, color) => 
+{
     canvasContext.fillStyle = color;
     canvasContext.fillRect(x, y, width, height);
 };
@@ -12,9 +13,11 @@ const DIRECTION_RIGHT = 4;
 const DIRECTION_UP = 3;
 const DIRECTION_LEFT = 2;
 const DIRECTION_BOTTOM = 1;
+
 let lives = 3;
 let ghostCount = 4;
-let ghostImageLocations = [
+let ghostImageLocations = 
+[
     { x: 0, y: 0 },
     { x: 176, y: 0 },
     { x: 0, y: 121 },
@@ -22,19 +25,20 @@ let ghostImageLocations = [
 ];
 
 // Game variables
-let fps = 30;
+let fps             = 30;
 let pacman;
-let oneBlockSize = 20;
-let score = 0;
-let ghosts = [];
-let wallSpaceWidth = oneBlockSize / 1.6;
-let wallOffset = (oneBlockSize - wallSpaceWidth) / 2;
-let wallInnerColor = "black";
+let oneBlockSize    = 20;
+let score           = 0;
+let ghosts          = [];
+let wallSpaceWidth  = oneBlockSize / 1.6;
+let wallOffset      = (oneBlockSize - wallSpaceWidth) / 2;
+let wallInnerColor  = "black";
 
-// we now create the map of the walls,
+// create the map of the walls,
 // if 1 wall, if 0 not wall
 // 21 columns // 23 rows
-let map = [
+let map = 
+[
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
     [1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 1],
     [1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1, 2, 1, 1, 1, 2, 1, 1, 1, 2, 1],
@@ -60,7 +64,8 @@ let map = [
     [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
 ];
 
-let randomTargetsForGhosts = [
+let randomTargetsForGhosts = 
+[
     { x: 1 * oneBlockSize, y: 1 * oneBlockSize },
     { x: 1 * oneBlockSize, y: (map.length - 2) * oneBlockSize },
     { x: (map[0].length - 2) * oneBlockSize, y: oneBlockSize },
@@ -76,8 +81,10 @@ let randomTargetsForGhosts = [
 //     }
 // }
 
-let createNewPacman = () => {
-    pacman = new Pacman(
+let createNewPacman = () => 
+{
+    pacman = new Pacman
+    (
         oneBlockSize,
         oneBlockSize,
         oneBlockSize,
@@ -86,39 +93,51 @@ let createNewPacman = () => {
     );
 };
 
-let gameLoop = () => {
+let gameLoop = () => 
+{
     update();
     draw();
 };
 
 let gameInterval = setInterval(gameLoop, 1000 / fps);
 
-let restartPacmanAndGhosts = () => {
+let restartPacmanAndGhosts = () =>
+{
     createNewPacman();
     createGhosts();
 };
 
-let onGhostCollision = () => {
+let onGhostCollision = () => 
+{
     lives--;
     restartPacmanAndGhosts();
     if (lives == 0) {
     }
 };
 
-let update = () => {
+let update = () => 
+{
     pacman.moveProcess();
     pacman.eat();
+
     updateGhosts();
-    if (pacman.checkGhostCollision(ghosts)) {
+
+    if (pacman.checkGhostCollision(ghosts)) 
+    {
         onGhostCollision();
     }
 };
 
-let drawFoods = () => {
-    for (let i = 0; i < map.length; i++) {
-        for (let j = 0; j < map[0].length; j++) {
-            if (map[i][j] == 2) {
-                createRect(
+let drawFoods = () => 
+{
+    for (let i = 0; i < map.length; i++) 
+    {
+        for (let j = 0; j < map[0].length; j++) 
+        {
+            if (map[i][j] == 2) 
+            {
+                createRect
+                (
                     j * oneBlockSize + oneBlockSize / 3,
                     i * oneBlockSize + oneBlockSize / 3,
                     oneBlockSize / 3,
@@ -130,13 +149,16 @@ let drawFoods = () => {
     }
 };
 
-let drawRemainingLives = () => {
+let drawRemainingLives = () => 
+{
     canvasContext.font = "20px Emulogic";
     canvasContext.fillStyle = "white";
     canvasContext.fillText("Lives: ", 220, oneBlockSize * (map.length + 1));
 
-    for (let i = 0; i < lives; i++) {
-        canvasContext.drawImage(
+    for (let i = 0; i < lives; i++) 
+    {
+        canvasContext.drawImage
+        (
             pacmanFrames,
             2 * oneBlockSize,
             0,
@@ -150,17 +172,20 @@ let drawRemainingLives = () => {
     }
 };
 
-let drawScore = () => {
+let drawScore = () => 
+{
     canvasContext.font = "20px Emulogic";
     canvasContext.fillStyle = "white";
-    canvasContext.fillText(
+    canvasContext.fillText
+    (
         "Score: " + score,
         0,
         oneBlockSize * (map.length + 1)
     );
 };
 
-let draw = () => {
+let draw = () => 
+{
     canvasContext.clearRect(0, 0, canvas.width, canvas.height);
     createRect(0, 0, canvas.width, canvas.height, "black");
     drawWalls();
@@ -171,19 +196,27 @@ let draw = () => {
     drawRemainingLives();
 };
 
-let drawWalls = () => {
-    for (let i = 0; i < map.length; i++) {
-        for (let j = 0; j < map[0].length; j++) {
-            if (map[i][j] == 1) {
-                createRect(
+let drawWalls = () => 
+{
+    for (let i = 0; i < map.length; i++) 
+    {
+        for (let j = 0; j < map[0].length; j++) 
+        {
+            if (map[i][j] == 1) 
+            {
+                createRect
+                (
                     j * oneBlockSize,
                     i * oneBlockSize,
                     oneBlockSize,
                     oneBlockSize,
                     "#342DCA"
                 );
-                if (j > 0 && map[i][j - 1] == 1) {
-                    createRect(
+
+                if (j > 0 && map[i][j - 1] == 1) 
+                {
+                    createRect
+                    (
                         j * oneBlockSize,
                         i * oneBlockSize + wallOffset,
                         wallSpaceWidth + wallOffset,
@@ -192,8 +225,10 @@ let drawWalls = () => {
                     );
                 }
 
-                if (j < map[0].length - 1 && map[i][j + 1] == 1) {
-                    createRect(
+                if (j < map[0].length - 1 && map[i][j + 1] == 1) 
+                {
+                    createRect
+                    (
                         j * oneBlockSize + wallOffset,
                         i * oneBlockSize + wallOffset,
                         wallSpaceWidth + wallOffset,
@@ -202,8 +237,10 @@ let drawWalls = () => {
                     );
                 }
 
-                if (i < map.length - 1 && map[i + 1][j] == 1) {
-                    createRect(
+                if (i < map.length - 1 && map[i + 1][j] == 1) 
+                {
+                    createRect
+                    (
                         j * oneBlockSize + wallOffset,
                         i * oneBlockSize + wallOffset,
                         wallSpaceWidth,
@@ -212,8 +249,10 @@ let drawWalls = () => {
                     );
                 }
 
-                if (i > 0 && map[i - 1][j] == 1) {
-                    createRect(
+                if (i > 0 && map[i - 1][j] == 1) 
+                {
+                    createRect
+                    (
                         j * oneBlockSize + wallOffset,
                         i * oneBlockSize,
                         wallSpaceWidth,
@@ -226,10 +265,14 @@ let drawWalls = () => {
     }
 };
 
-let createGhosts = () => {
+let createGhosts = () => 
+{
     ghosts = [];
-    for (let i = 0; i < ghostCount * 2; i++) {
-        let newGhost = new Ghost(
+
+    for (let i = 0; i < ghostCount * 2; i++) 
+    {
+        let newGhost = new Ghost
+        (
             9 * oneBlockSize + (i % 2 == 0 ? 0 : 1) * oneBlockSize,
             10 * oneBlockSize + (i % 2 == 0 ? 0 : 1) * oneBlockSize,
             oneBlockSize,
@@ -241,6 +284,7 @@ let createGhosts = () => {
             116,
             6 + i
         );
+
         ghosts.push(newGhost);
     }
 };
@@ -249,19 +293,29 @@ createNewPacman();
 createGhosts();
 gameLoop();
 
-window.addEventListener("keydown", (event) => {
+window.addEventListener("keydown", (event) => 
+{
     let k = event.keyCode;
-    setTimeout(() => {
-        if (k == 37 || k == 65) {
+
+    setTimeout(() => 
+    {
+        if (k == 37 || k == 65) 
+        {
             // left arrow or a
             pacman.nextDirection = DIRECTION_LEFT;
-        } else if (k == 38 || k == 87) {
+        } 
+        else if (k == 38 || k == 87) 
+        {
             // up arrow or w
             pacman.nextDirection = DIRECTION_UP;
-        } else if (k == 39 || k == 68) {
+        } 
+        else if (k == 39 || k == 68) 
+        {
             // right arrow or d
             pacman.nextDirection = DIRECTION_RIGHT;
-        } else if (k == 40 || k == 83) {
+        } 
+        else if (k == 40 || k == 83) 
+        {
             // bottom arrow or s
             pacman.nextDirection = DIRECTION_BOTTOM;
         }
